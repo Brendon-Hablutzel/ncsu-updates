@@ -3,8 +3,6 @@ import os
 from typing import NamedTuple, List, Any
 from dining import DiningHall, Meal
 
-SCHEMA_FILE = "schema.sql"
-
 
 class Record(NamedTuple):
     dining_hall: DiningHall
@@ -29,10 +27,6 @@ class DataStore:
         )
 
         cursor = self.connection.cursor()
-
-        with open(SCHEMA_FILE, "r") as f:
-            schema = f.read()
-            cursor.execute(schema)
 
         self.connection.commit()
         cursor.close()
