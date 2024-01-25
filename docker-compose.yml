@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10-focal
+    restart: always
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'mysqladmin ping -h 127.0.0.1 --password=$MYSQL_ROOT_PASSWORD --silent'
+        ]
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - net
+    environment:
+      - MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD
+    expose:
+      - 3306
+      - 33060
+  updater:
+    build:
+      context: updater
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - net
+    environment:
+      - DB_HOSTNAME=db
+      - MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_USER
+      - GMAIL_USERNAME
+      - GMAIL_APP_PASSWORD
+
+volumes:
+  db-data:
+
+
+networks:
+  net:

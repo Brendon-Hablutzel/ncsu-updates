@@ -2,7 +2,6 @@ import smtplib
 import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import List
 
 
 def get_secret(secret_name: str):
@@ -21,17 +20,23 @@ class NotificationSystem:
         gmail_app_password = get_secret("GMAIL_APP_PASSWORD")
         self.smtp_server.login(self.gmail_username, gmail_app_password)
 
-    def __del__(self):
+        self.initialized_server = True
+
+    def close(self):
         self.smtp_server.quit()
 
-    # for email, recipients is a list of email addresses
-    def send_notification(self, recipients: List[str], title: str, message: str):
+    # for email, recipients is an email address
+    def send_notification(self, recipient: str, title: str, message: str):
+        if not self.initialized_server:
+            raise Exception(
+                "must initialize server using a context manager before sending notifications")
+
         msg = MIMEMultipart()
         msg["Subject"] = title
         msg["From"] = f"{self.gmail_username}@gmail.com"
-        msg["To"] = ", ".join(recipients)
+        msg["To"] = recipient
 
         msg.attach(MIMEText(message, "plain"))
 
         self.smtp_server.sendmail(f"{self.gmail_username}@gmail.com",
-                                  recipients, msg.as_string())
+                                  recipient, msg.as_string())

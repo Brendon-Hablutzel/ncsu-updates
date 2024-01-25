@@ -1,7 +1,7 @@
 import datetime
 import requests
 from enum import Enum
-from typing import List, Union
+from typing import List, Union, Any
 from bs4 import BeautifulSoup, Tag
 
 
@@ -13,28 +13,37 @@ class Meal(Enum):
     LUNCH = "lunch"
     BREAKFAST = "breakfast"
 
+    @staticmethod
+    def from_string(name: str) -> 'Meal':
+        if name == "dinner":
+            return Meal.DINNER
+        elif name == "lunch":
+            return Meal.LUNCH
+        elif name == "breakfast":
+            return Meal.BREAKFAST
+        else:
+            raise Exception(f"invalid meal name: {name}")
 
-def string_to_meal(name: str) -> Meal:
-    if name == "dinner":
-        return Meal.DINNER
-    elif name == "lunch":
-        return Meal.LUNCH
-    elif name == "breakfast":
-        return Meal.BREAKFAST
-    else:
-        raise Exception(f"invalid meal name: {name}")
+    def to_string(self) -> str:
+        return self.value
 
 
 # stores the id associated with each dining hall
 class DiningHall(Enum):
     FOUNTAIN = 45
 
+    @staticmethod
+    def from_string(name: str) -> 'DiningHall':
+        if name == "fountain":
+            return DiningHall.FOUNTAIN
+        else:
+            raise Exception(f"invalid dining hall name: {name}")
 
-def string_to_dininghall(name: str) -> DiningHall:
-    if name == "fountain":
-        return DiningHall.FOUNTAIN
-    else:
-        raise Exception(f"invalid dining hall name: {name}")
+    def to_string(self) -> str:
+        if self == DiningHall.FOUNTAIN:
+            return "fountain"
+        else:
+            raise Exception(f"invalid dining hall state")
 
 
 class DiningHallData:
@@ -75,8 +84,18 @@ class DiningHallData:
         keyword = keyword.lower()
 
         for dish in dish_names:
-            dish = dish.lower()
-            if keyword in dish:
+            if keyword in dish.lower():
                 return dish
 
         return None
+
+    @staticmethod
+    def find_dishes_by_keywords(dish_names: List[str], keywords: List[str]) -> Any:
+        dishes: List[str] = []
+
+        for keyword in keywords:
+            keyword = keyword.lower()
+            matching = [dish for dish in dish_names if keyword in dish.lower()]
+            dishes.extend(matching)
+
+        return dishes
