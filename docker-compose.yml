@@ -19,26 +19,41 @@ services:
     networks:
       - net
     environment:
-      - MYSQL_DATABASE
+      - MYSQL_DATABASE=notifs
       - MYSQL_ROOT_PASSWORD
     expose:
       - 3306
       - 33060
-  updater:
+
+  notifier:
     build:
-      context: updater
+      context: notifier
     depends_on:
       db:
         condition: service_healthy
     networks:
       - net
     environment:
-      - DB_HOSTNAME=db
-      - MYSQL_DATABASE
-      - MYSQL_ROOT_PASSWORD
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=notifs
       - MYSQL_USER=root
+      - MYSQL_PASSWORD
       - GMAIL_USERNAME
       - GMAIL_APP_PASSWORD
+
+  scripts:
+    build:
+      context: scripts
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - net
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=notifs
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD
 
 volumes:
   db-data:

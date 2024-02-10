@@ -2,7 +2,7 @@ import datetime
 from typing import List
 from dining import DiningHallData, DiningHall, Meal
 from notify import NotificationSystem
-from datastore import DataStore
+from datastore import get_db_connection
 import logging
 
 
@@ -32,8 +32,10 @@ def notify(dining_hall: DiningHall, date: datetime.date, meal: Meal, keywords: L
 def main():
     current_date = datetime.date.today()
 
-    data_store = DataStore()
+    data_store = get_db_connection()
+
     records = data_store.get_records()
+
     data_store.close()
 
     for record in records:

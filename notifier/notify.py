@@ -1,23 +1,14 @@
 import smtplib
-import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-
-def get_secret(secret_name: str):
-    secret = os.getenv(f"{secret_name}")
-
-    if secret is None:
-        raise Exception(f"secret {secret_name} not found")
-
-    return secret
+from get_vars import get_gmail_username, get_gmail_app_password
 
 
 class NotificationSystem:
     def __init__(self):
         self.smtp_server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        self.gmail_username = get_secret("GMAIL_USERNAME")
-        gmail_app_password = get_secret("GMAIL_APP_PASSWORD")
+        self.gmail_username = get_gmail_username()
+        gmail_app_password = get_gmail_app_password()
         self.smtp_server.login(self.gmail_username, gmail_app_password)
 
         self.initialized_server = True

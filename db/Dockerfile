@@ -1,4 +1,4 @@
-FROM mariadb:10-focal
+FROM yobasystems/alpine-mariadb
 
 ADD schema.sql /docker-entrypoint-initdb.d
 
