@@ -19,13 +19,13 @@ Optional environment variables:
 
 Start database in the background: `docker compose up db -d`
 
-Run notifier: `docker compose run notifier`
+Run notifier: `docker compose run --rm notifier`
 
-Run notifier and close DB after: `docker compose run notifier && docker compose down db`
+Run notifier and close DB after: `docker compose run --rm notifier && docker compose down db`
 
 ### Scripts
 
 Some scripts are available to edit the notifs database:
-- `docker compose run scripts read [recipient]` returns all records in the database, optionally filtering by recipient
-- `docker compose run scripts create <dining hall> <meal> <keyword(s)> <recipient>` adds a record to the database, where multiple keywords can be specified if separated with commas
-- `docker compose run scripts delete <recipient>` deletes all records with the given recipient
+- `docker compose run --rm scripts read [recipient]` returns all records in the database, optionally filtering by recipient
+- `docker compose run --rm scripts create <dining hall> <meal> <keyword(s)> <recipient>` adds a record to the database, where multiple keywords can be specified if separated with commas
+- `docker compose run --rm scripts delete <recipient>` deletes all records with the given recipient
