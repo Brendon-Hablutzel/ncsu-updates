@@ -15,6 +15,11 @@ if [ "${1}" == "read" ]; then
     exit
 fi
 
+if [ "${1}" == "update" ]; then
+    python3 update.py $2 $3 $4 $5
+    exit
+fi
+
 if [ "${1}" == "delete" ]; then
     python3 delete.py $2
     exit

@@ -37,6 +37,7 @@ class DataStore:
         self.connection = MySQLConnection(
             user=user, password=password, host=host, database=database
         )
+        self.database_name = database
 
         cursor = self.connection.cursor()
 
@@ -49,7 +50,7 @@ class DataStore:
     def get_records(self) -> List[Record]:
         cursor = self.connection.cursor()
 
-        cursor.execute("SELECT * FROM records")
+        cursor.execute(f"SELECT * FROM records")
         results = cursor.fetchall()
 
         cursor.close()
@@ -59,7 +60,7 @@ class DataStore:
         cursor = self.connection.cursor()
 
         cursor.execute(
-            "SELECT * FROM records WHERE recipient = %s", (recipient, ))
+            f"SELECT * FROM records WHERE recipient = %s", (recipient, ))
         results = cursor.fetchall()
 
         cursor.close()
@@ -69,7 +70,7 @@ class DataStore:
         cursor = self.connection.cursor()
 
         add_record = (
-            "INSERT INTO records (dining_hall, meal, keywords, recipient) VALUES (%s, %s, %s, %s)")
+            f"INSERT INTO records (dining_hall, meal, keywords, recipient) VALUES (%s, %s, %s, %s)")
         record_values = (DiningHall.to_string(record.dining_hall), Meal.to_string(record.meal),
                          ','.join(record.keywords), record.recipient)
 
@@ -77,10 +78,20 @@ class DataStore:
         self.connection.commit()
         cursor.close()
 
+    def update_record(self, dining_hall: DiningHall, meal: Meal, keywords: list[str], recipient: str):
+        cursor = self.connection.cursor()
+
+        cursor.execute(f"UPDATE records SET keywords = %s WHERE dining_hall = %s AND meal = %s AND recipient = %s", (','.join(
+            keywords), dining_hall.to_string(), meal.to_string(), recipient))
+
+        self.connection.commit()
+        cursor.close()
+
     def delete_records(self, recipient: str):
         cursor = self.connection.cursor()
 
-        delete_records = ("DELETE FROM records WHERE recipient = %s")
+        delete_records = (
+            f"DELETE FROM records WHERE recipient = %s")
         data = tuple(recipient)
 
         cursor.execute(delete_records, data)

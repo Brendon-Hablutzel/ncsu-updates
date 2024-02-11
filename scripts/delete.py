@@ -15,3 +15,5 @@ if __name__ == "__main__":
     data_store.delete_records(recipient)
 
     data_store.close()
+
+    print("Done")
