@@ -1,46 +1,45 @@
-import datetime
-from typing import List
-from dining import DiningHallData, DiningHall, Meal
+from typing import Iterable
 from notify import NotificationSystem
-from datastore import get_db_connection
-import logging
+from datastore import get_db_connection, Record, initialize_cache, Cache
+import itertools
 
 
-def notify(dining_hall: DiningHall, date: datetime.date, meal: Meal, keywords: List[str], recipient: str):
-    logging.info(
-        f"Searching for {keywords} at {dining_hall} on {date} for {meal}; results, if any, will be sent to {recipient}")
+def notify_recipient(
+    recipient: str,
+    recipient_records: Iterable[Record],
+    notifications: NotificationSystem,
+    cache: Cache
+):
+    text = ""
 
-    dishes = DiningHallData.get_food(
-        dining_hall, date, meal)
+    for record in recipient_records:
+        for keyword in record.keywords:
 
-    dishes = DiningHallData.find_dishes_by_keywords(dishes, keywords)
+            dishes = cache.get_dishes(record.dining_hall, record.meal, keyword)
 
-    notifications = NotificationSystem()
+            if len(dishes) > 0:
+                keywords = [f"'{keyword}'" for keyword in record.keywords]
+                plural = "es" if len(dishes) > 1 else ""
+                text += f"{len(dishes)} dish{plural} at {record.dining_hall.to_string().capitalize()} for {record.meal.to_string()} matching {', '.join(keywords)}: {', '.join(dish[2] for dish in dishes)}\n\n"
 
-    try:
-        if len(dishes) > 0:
-            logging.info(f"Sending: {dishes} to {recipient}")
-
-            notifications.send_notification(
-                recipient, "Food update", f"Requested dishes were found: {', '.join(dishes)}")
-    except Exception as e:
-        raise Exception(f"Error sending notification: {e}")
-    finally:
-        notifications.close()
+    notifications.send_notification(recipient, "Food Update", text)
 
 
 def main():
-    current_date = datetime.date.today()
+    notifications = NotificationSystem()
 
     data_store = get_db_connection()
 
+    cache = initialize_cache()
+
     records = data_store.get_records()
 
-    data_store.close()
+    records = itertools.groupby(
+        records, key=lambda record: record.recipient)
 
-    for record in records:
-        notify(record.dining_hall, current_date, record.meal,
-               record.keywords, record.recipient)
+    for (recipient, recipient_records) in records:
+        notify_recipient(recipient, recipient_records,
+                         notifications, cache)
 
 
 if __name__ == "__main__":

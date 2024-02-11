@@ -1,7 +1,7 @@
 import datetime
 import requests
 from enum import Enum
-from typing import List, Union, Any
+from typing import List  # , Union, Any
 from bs4 import BeautifulSoup, Tag
 
 
@@ -79,23 +79,23 @@ class DiningHallData:
 
         return all_dishes
 
-    @staticmethod
-    def find_dish_by_keyword(dish_names: List[str], keyword: str) -> Union[str, None]:
-        keyword = keyword.lower()
+    # @staticmethod
+    # def find_dish_by_keyword(dish_names: List[str], keyword: str) -> Union[str, None]:
+    #     keyword = keyword.lower()
 
-        for dish in dish_names:
-            if keyword in dish.lower():
-                return dish
+    #     for dish in dish_names:
+    #         if keyword in dish.lower():
+    #             return dish
 
-        return None
+    #     return None
 
-    @staticmethod
-    def find_dishes_by_keywords(dish_names: List[str], keywords: List[str]) -> Any:
-        dishes: List[str] = []
+    # @staticmethod
+    # def find_dishes_by_keywords(dish_names: List[str], keywords: List[str]) -> Any:
+    #     dishes: List[str] = []
 
-        for keyword in keywords:
-            keyword = keyword.lower()
-            matching = [dish for dish in dish_names if keyword in dish.lower()]
-            dishes.extend(matching)
+    #     for keyword in keywords:
+    #         keyword = keyword.lower()
+    #         matching = [dish for dish in dish_names if keyword in dish.lower()]
+    #         dishes.extend(matching)
 
-        return dishes
+    #     return dishes

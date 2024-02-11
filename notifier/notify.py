@@ -29,5 +29,8 @@ class NotificationSystem:
 
         msg.attach(MIMEText(message, "plain"))
 
-        self.smtp_server.sendmail(f"{self.gmail_username}@gmail.com",
-                                  recipient, msg.as_string())
+        try:
+            self.smtp_server.sendmail(f"{self.gmail_username}@gmail.com",
+                                      recipient, msg.as_string())
+        except Exception as e:
+            raise Exception(f"error sending mail: {e}")
