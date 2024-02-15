@@ -12,3 +12,4 @@ COPY start.sh .
 
 
 ENTRYPOINT ["bash", "start.sh"]
+
