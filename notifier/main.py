@@ -22,8 +22,8 @@ def notify_recipient(
                 plural = "es" if len(dishes) > 1 else ""
                 text += f"{len(dishes)} dish{plural} at {record.dining_hall.to_string().capitalize()} for {record.meal.to_string()} matching {', '.join(keywords)}: {', '.join(dish[2] for dish in dishes)}\n\n"
 
-    notifications.send_notification(recipient, "Food Update", text)
-
+    if len(text) > 0:
+        notifications.send_notification(recipient, "Food Update", text)
 
 def main():
     notifications = NotificationSystem()

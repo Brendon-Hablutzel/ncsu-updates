@@ -92,8 +92,8 @@ class DataStore:
 
         delete_records = (
             f"DELETE FROM records WHERE recipient = %s")
-        data = tuple(recipient)
-
+        data = (recipient,)
+        
         cursor.execute(delete_records, data)
         self.connection.commit()
         cursor.close()
